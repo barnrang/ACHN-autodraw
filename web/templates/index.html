@@ -1,0 +1,248 @@
+<!doctype html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<h1>BUTTON</h1>
+<table border=1>
+	<tr>
+		<th class="button">A</th>
+		<th class="button">B</th>
+		<th class="button">X</th>
+		<th class="button">Y</th>
+	</tr>
+	<tr>
+		<th class="button">L</th>
+		<th class="button">R</th>
+		<th class="button">ZL</th>
+		<th class="button">ZR</th>
+	</tr>
+	<tr>
+		<th class="button">SELECT</th>
+		<th class="button">START</th>
+		<th class="button">LCLICK</th>
+		<th class="button">RCLICK</th>
+		<th class="button">HOME</th>
+		<th class="button">CAPTURE</th>
+		<th class="button">RELEASE</th>
+		
+	</tr>
+</table>
+
+<h1>
+HAT
+</h1>
+<table border=1>
+	<tr>
+		<th class="hat">TOP</h>
+		<th class="hat">RIGHT</th>
+		<th class="hat">BOTTOM</th>
+		<th class="hat">LEFT</th>
+	</tr>
+
+</table>
+
+<form id="upload-file" method="post"> 
+<input type='file' name="image" onchange="readURL(this);" />
+</form>
+    <img id="blah" src="#" alt="your image" />
+
+<canvas id="cs" display=none hidden></canvas>
+<canvas id="colorpv"></canvas>
+
+<br/>
+<button onclick="generateColor()">generate color</button>
+
+<table border=1 id="color-palette">
+<tr>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+<th><canvas class="palette"></canvas></th>
+</tr>
+</table>
+
+<button onclick="draw()">Let's draw</button>
+
+<script>
+const handleOnclick = (ev) => {
+	targetElement = ev.target || ev.srcElement;
+	//console.log(targetElement);
+	className = targetElement.className;
+	var request = "";
+	if (className === "hat") 
+	{
+		request = "HAT " + targetElement.textContent;
+	}
+	else
+	{
+		request = "Button " + targetElement.textContent;
+	}
+
+	console.log(request);
+	$.post('/action', {'request': request})
+
+}
+
+for (obj of $('.button')){
+	obj.addEventListener('click', handleOnclick)
+}
+for (obj of $('.hat')){
+	obj.addEventListener('click', handleOnclick)
+}
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+	var reader = new FileReader();
+
+	reader.onload = function (e) {
+	    $('#blah')
+		.attr('src', e.target.result)
+		.width(100)
+		.height(100)
+	};
+
+	reader.readAsDataURL(input.files[0]);
+    }
+        var form_data = new FormData($('#upload-file')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/pic',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                console.log('Success!');
+            },
+        });
+}
+$('#upload-file-btn').click(function() {
+        var form_data = new FormData($('#upload-file')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/pic',
+            data: form_data,
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(data) {
+                console.log('Success!');
+            },
+        });
+    });
+
+
+var img = $('#blah')[0], x = '',y = '', canvas = $('#cs')[0];
+var pv_canvas = $('#colorpv')[0];
+var current_color = [255,255,255]
+img.addEventListener('click', function(e){
+  if(e.offsetX) {
+  x = e.offsetX;
+  y = e.offsetY; 
+  }
+  else if(e.layerX) {
+  x = e.layerX;
+  y = e.layerY;
+  }
+  useCanvas(canvas,img,function(){
+  var p = canvas.getContext('2d')
+  .getImageData(x, y, 1, 1).data;
+  console.log(p);
+
+  pv_canvas.getContext('2d')
+  .rect(0, 0, 32, 32);
+  pv_canvas.getContext('2d')
+  .fillStyle = rgbToHex(p[0], p[1], p[2]);
+  pv_canvas.getContext('2d')
+  .fill();
+  current_color = [p[0], p[1], p[2]];
+  });
+},false);
+
+function useCanvas(el,image,callback){
+  el.width = image.width;
+  el.height = image.height; 
+  el.getContext('2d')
+  .drawImage(image, 0, 0, image.width, image.height);
+  return callback();
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+// Color Palette
+
+var all_canvas = $('.palette');
+var rgb_palette = []
+var iter = 0
+
+function getListener(obj, iter)
+{
+	var a = iter
+	const tmp = () => {
+		console.log("changing palette")
+		obj.getContext('2d').rect(0,0,32,32)
+		obj.getContext('2d').fillStyle = rgbToHex(current_color[0], current_color[1], current_color[2]);
+		obj.getContext('2d').fill();
+		rgb_palette[a] = current_color;
+	}
+	return tmp
+}
+
+for (obj of all_canvas){
+	obj.width=32;
+	obj.height=32;
+	obj.getContext('2d').rect(0,0,32,32)
+	obj.getContext('2d').fillStyle = "white";
+	obj.getContext('2d').fill();
+	rgb_palette.push([255, 255, 255])
+	obj.addEventListener('click', getListener(obj, iter))
+	//obj.addEventListener('click', ()=>{
+	//	console.log("changing palette")
+	//	obj.getContext('2d').rect(0,0,32,32)
+	//	obj.getContext('2d').fillStyle = rgbToHex(current_color[0], current_color[1], current_color[2]);
+	//	obj.getContext('2d').fill();
+	//	rgb_palette[iter] = current_color;
+	//	})
+	iter++;
+}
+
+function generateColor()
+{
+	$.ajax({
+      type: 'POST',
+      url: "/gen-color",
+      contentType: 'application/json; charset=utf-8',
+      success: function(data){
+	for (var i = 0; i < data.length; i++)
+	{
+		rgb_palette[i] = data[i];
+		all_canvas[i].getContext('2d').rect(0,0,32,32)
+		all_canvas[i].getContext('2d').fillStyle = rgbToHex(data[i][0], data[i][1], data[i][2]) 
+		all_canvas[i].getContext('2d').fill()
+	}	
+      }
+    });
+}
+
+function draw(){
+	$.post('/start-draw', {'palette': JSON.stringify(rgb_palette)});
+}
+
+</script>
