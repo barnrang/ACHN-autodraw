@@ -1,8 +1,5 @@
-# Switch-Fightstick
-[![Thumbnail](https://i.imgur.com/cJLZUdhl.jpg)](https://twitter.com/ebith/status/954858876028907521)
-- [Xenoblade Chronicles 2](https://twitter.com/ebith/status/954858876028907521)
-- [Octopath Traveler](https://twitter.com/ebith/status/1079163336862818305)
-- [Animal Crossing: New Horizons](https://twitter.com/ebith/status/1242763638756134915)
+# ACHN-Autodraw
+
 
 ## Requirement
 - ATMega32U4 Board or see [shinyquagsire23/Switch-Fightstick's README](https://github.com/shinyquagsire23/Switch-Fightstick/blob/master/README.md)
