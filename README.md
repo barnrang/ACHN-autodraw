@@ -1,22 +1,37 @@
 # ACHN-Autodraw
+![](ACHN.gif)
 
+Connect microcontroller to the nintendo switch and draw picture in ACHN!
 
 ## Requirement
 - ATMega32U4 Board or see [shinyquagsire23/Switch-Fightstick's README](https://github.com/shinyquagsire23/Switch-Fightstick/blob/master/README.md)
 - USB to serial adapter
 - USB micro-b cable * 2
 
-## Usage
+- Flask (python 3.6+)
+
+## Setup
 [NintendoSwitchをPCから操作する - おいら屋ファクトリー](https://blog.feelmy.net/control-nintendo-switch-from-computer/)(in Japanese)
 
-### On MacOS
-```sh
-brew install avr-dude osx-cross/avr/avr-gcc
-git clone --recursive https://github.com/ebith/Switch-Fightstick.git
-cd Switch-Fightstick
-make
-avrdude -pm32u4 -cavr109 -D -P$(ls /dev/tty.usbmodem*) -b57600 -Uflash:w:Joystick.hex # need reset
+Recommend to read through to get a basic understanding
 
-pip3 install pyserial
-./example/rapid-fire-a.py /dev/tty.usbserial*
+## Usage
+
+### Game side
+1. Open the custom design and leave it there
+
+### Program side
+
+1. Run the web server
+
 ```
+cd <project-root-folder>/web
+./start_server
+```
+
+2. Access the web through the port as flask shows in the terminal
+3. Prepared 32 x 32 image (by yourself) and click upload
+4. Click generate color to recommend the color palette
+5. Change the color in the palette by clicking on the box you want to change and click any position in the image to get the color of a pixel
+6. Run (make sure everything is connected!)
+
