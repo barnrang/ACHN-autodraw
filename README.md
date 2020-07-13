@@ -18,7 +18,7 @@ Recommend to read through to get a basic understanding
 ## Usage
 
 ### Game side
-1. Open the custom design and leave it there
+1. Open the custom design and leave it there (after click `edit design`)
 
 ### Program side
 
