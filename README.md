@@ -9,6 +9,7 @@ Connect microcontroller to the nintendo switch and draw picture in ACHN!
 - USB micro-b cable * 2
 
 - Flask (python 3.6+)
+- numpy, scipy, skimage
 
 ## Setup
 [NintendoSwitchをPCから操作する - おいら屋ファクトリー](https://blog.feelmy.net/control-nintendo-switch-from-computer/)(in Japanese)
